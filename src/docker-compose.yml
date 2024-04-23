@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 volumes:
   postgresdb:
 services:
@@ -17,68 +17,28 @@ services:
     volumes:
       - postgresdb:/var/lib/postgresql/data
       - ./postgres/initdb:/docker-entrypoint-initdb.d
-  pgadmin1:
+  pgadmin:
     build:
-      context: ./pgadmin1
-    image: pgadmin1
-    container_name: pgadmin1
+      context: ./pgadmin
+    image: pgadmin
+    container_name: pgadmin
     ports:
       - 5050:80
     environment:
       - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=admin
       - PGADMIN_CONFIG_SERVER_MODE=False
-      - PGADMIN_SERVER_JSON_FILE=/pgadmin4/servers.json
+      - PGADMIN_SERVER_JSON_FILE=/pgadmin/servers.json
+      - PGADMIN_PREFERENCES_JSON_FILE=/pgadmin/preferences.json
       - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
       - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
       - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False
     volumes:
-      - ./pgadmin1/storage:/root/storage
-      - ./pgadmin1/servers.json:/pgadmin4/servers.json
-      - ./pgadmin1/pgadmin4.db:/var/lib/pgadmin/pgadmin4.db
+      - ./pgadmin/storage:/root/storage
+      - ./pgadmin/servers.json:/pgadmin/servers.json
+      - ./pgadmin/preferences.json:/pgadmin/preferences.json
     user: root
     restart: always
     entrypoint: /entrypoint.sh
-  pgadmin2:
-    build:
-      context: ./pgadmin2
-    image: pgadmin2
-    container_name: pgadmin2
-    ports:
-      - 5051:80
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
-      - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGADMIN_CONFIG_SERVER_MODE=False
-      - PGADMIN_SERVER_JSON_FILE=/pgadmin4/servers.json
-      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
-      - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
-      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False
-    volumes:
-      - ./pgadmin2/storage:/root/storage
-      - ./pgadmin2/servers.json:/pgadmin4/servers.json
-    user: root
-    restart: always
-    entrypoint: /entrypoint.sh
-  pgadmin3:
-    build:
-      context: ./pgadmin3
-    image: pgadmin3
-    container_name: pgadmin3
-    ports:
-      - 5052:80
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
-      - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGADMIN_CONFIG_SERVER_MODE=False
-      - PGADMIN_SERVER_JSON_FILE=/pgadmin4/servers.json
-      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
-      - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
-      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False
-    volumes:
-      - ./pgadmin3/storage:/root/storage
-      - ./pgadmin3/servers.json:/pgadmin4/servers.json
-      - ./pgadmin3/entrypoint.sh:/entrypoint.sh
-    user: root
-    restart: always
-    entrypoint: /entrypoint.sh
+    depends_on:
+      - postgres
